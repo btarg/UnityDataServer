@@ -118,6 +118,29 @@ app.put('/remove/:id', requiresAuth(), (req, res) => {
         })
 })
 
+app.get('/viewpost/:id', requiresAuth(), async (req, res) => {
+    const { id } = req.params
+    var post
+
+    try {
+        post = getPost(id)
+    } catch (error) {
+        res.status(500).send("CANNOT_GET_POSTS").end()
+        return
+    }
+    var docs = new Array()
+
+    // i have no idea why we have to do a for loop here
+    await post.forEach(doc => {
+        if (doc !== undefined) {
+            docs.push(JSON.stringify(doc));
+        }
+        
+    })
+    res.status(200).send(docs[0])
+
+})
+
 app.get('/getposts/:lat/:long', requiresAuth(), async (req, res) => {
 
     const { lat, long } = req.params
@@ -141,7 +164,7 @@ app.get('/getposts/:lat/:long', requiresAuth(), async (req, res) => {
     var postsJSON = {
         posts: docs
     }
-    res.send(postsJSON)
+    res.status(200).send(postsJSON)
 
 
 })
@@ -151,7 +174,7 @@ app.get('/', (req, res) => {
 
     if (req.oidc.isAuthenticated()) {
 
-        res.send(`Welcome back, ${req.oidc.user["name"]}<br><img src="${req.oidc.user['picture']}" />`)
+        res.status(200).send(`Welcome back, ${req.oidc.user["name"]}<br><img src="${req.oidc.user['picture']}" />`)
 
     } else {
         res.redirect('/login');

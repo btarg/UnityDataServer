@@ -23,9 +23,9 @@ const removeItem = (id) => {
     return collection.deleteOne({ "_id": new ObjectId(id) });
 }
 
-const getPost = (what3) => {
+const getPost = (id) => {
     const collection = db.collection('posts')
-    return collection.findOne({ "what3": what3 })
+    return collection.find({ "_id": new ObjectId(id) })
 }
 
 const getPostsInRange = (lng, lat, md) => {
