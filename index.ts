@@ -9,13 +9,15 @@ app.use(bodyParser.json())
 
 const { auth, requiresAuth } = require('express-openid-connect');
 
+
 const config = {
     authRequired: false,
     auth0Logout: true,
     secret: process.env.SECRET,
-    baseURL: 'http://localhost:3000',
+    baseURL: process.env.BASE_URL,
     clientID: process.env.CLIENT_ID,
-    issuerBaseURL: 'https://dev-psfdse0phh3q85qw.uk.auth0.com'
+    issuerBaseURL: process.env.ISSUER_BASE_URL,
+    
 };
 
 // auth router attaches /login, /logout, and /callback routes to the baseURL
@@ -88,7 +90,7 @@ app.post('/post', requiresAuth(), async (req, res) => {
 
                 })
         } else {
-            res.status(420).send("NOT_TODAY").end()
+            res.status(420).send("CANNOT_OVERWRITE_TODAY").end()
         }
         
     })
@@ -169,11 +171,23 @@ app.get('/getposts/:lat/:long', requiresAuth(), async (req, res) => {
 
 })
 
+
+app.get('/token', async (req, res) => {
+
+     if (req.oidc.isAuthenticated()) { 
+
+        res.status(200).send(req.oidc.idToken)
+
+     } else {
+        res.status(401).send("NOT_AUTHENTICATED")
+     }
+
+})
+
 // req.isAuthenticated is provided from the auth router
 app.get('/', (req, res) => {
 
     if (req.oidc.isAuthenticated()) {
-
         res.status(200).send(`Welcome back, ${req.oidc.user["name"]}<br><img src="${req.oidc.user['picture']}" />`)
 
     } else {

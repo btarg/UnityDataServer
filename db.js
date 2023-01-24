@@ -36,8 +36,6 @@ const getPostsInRange = (lng, lat, md) => {
 
         postCollection.createIndex({location:"2dsphere"});
 
-        console.log("md:" + md);
-
         return postCollection.find({
         location: {
             $near: [parseFloat(lng), parseFloat(lat)],
