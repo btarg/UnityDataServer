@@ -135,12 +135,12 @@ postingRouter.get('/viewpost/:id', validateAccessToken, async (req, res) => {
 
 })
 
-postingRouter.post('/getposts/:lat/:long', validateAccessToken, async (req, res) => {
+postingRouter.get('/getposts/:lat/:long', validateAccessToken, async (req, res) => {
 
     // swear filter
     var useFilter = false
-    if (req.body.toString().length > 0) {
-        useFilter = req.body.filter;
+    if (req.headers.filter) {
+        useFilter = JSON.parse(req.headers.filter);
     }
 
     const { lat, long } = req.params
