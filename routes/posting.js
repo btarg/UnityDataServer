@@ -8,6 +8,10 @@ const Joi = require('joi');
 const Filter = require('bad-words');
 
 
+const searchRange = (0.12 / 111.12)
+const tooCloseRange = (0.06 / 111.12)
+//const tooCloseRange = 1
+
 const itemSchema = Joi.object().keys({
     textBody: Joi.string(),
     image: Joi.string(),
@@ -40,7 +44,7 @@ postingRouter.post('/post', validateAccessToken, async (req, res) => {
 
     try {
 
-        var tooClose = getPostsInRange(long, lat, (0.02 / 111.12)) // 2m, social distance
+        var tooClose = getPostsInRange(long, lat, tooCloseRange)
 
         tooClose.count(async function (err, count) {
             if (count > 0) {
@@ -147,7 +151,7 @@ postingRouter.get('/getposts/:lat/:long', validateAccessToken, async (req, res) 
 
     var posts;
     try {
-        posts = getPostsInRange(long, lat, (0.12 / 111.12))
+        posts = getPostsInRange(long, lat, searchRange)
     } catch (error) {
         res.status(500).send("CANNOT_GET_POSTS")
     }

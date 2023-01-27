@@ -1,7 +1,5 @@
-const cors = require("cors");
 const dotenv = require("dotenv");
 const express = require("express");
-const nocache = require("nocache");
 const { postingRouter } = require("./routes/posting");
 const { errorHandler } = require("./middleware/error.middleware");
 const { notFoundHandler } = require("./middleware/not-found.middleware");
@@ -19,7 +17,6 @@ const PORT = parseInt(process.env.PORT, 10);
 const app = express();
 
 app.use(express.json());
-app.use(nocache());
 app.use("/api", postingRouter);
 app.use(errorHandler);
 app.use(notFoundHandler);
