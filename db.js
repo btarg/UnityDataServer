@@ -1,4 +1,4 @@
-const { MongoClient, ObjectId } = require('mongodb')
+const { MongoClient, ObjectId, Collection } = require('mongodb')
 
 const connectionUrl = 'mongodb://127.0.0.1:27017'
 const dbName = 'store'
@@ -8,12 +8,12 @@ let db
 const init = () =>
     MongoClient.connect(connectionUrl, { useNewUrlParser: true }).then((client) => {
         db = client.db(dbName)
-        
+
     })
 
 const insertPost = (item) => {
     const postCollection = db.collection('posts')
-    postCollection.createIndex( { "createdAt": 1 }, { expireAfterSeconds: 259200 } ) // three days
+    postCollection.createIndex({ "createdAt": new Date().getTime() }, { expireAfterSeconds: 7884000 }) // three months
     return postCollection.insertOne(item)
 
 }
@@ -34,18 +34,22 @@ const getPostsInRange = (lng, lat, md) => {
         // get all posts in range
         const postCollection = db.collection('posts')
 
-        postCollection.createIndex({location:"2dsphere"});
+        postCollection.createIndex({ location: "2dsphere" });
+        const query = {
+            location: {
+                $near: [parseFloat(lng), parseFloat(lat)],
+                $maxDistance: parseFloat(md)
+            }
+        }
 
-        return postCollection.find({
-        location: {
-            $near: [parseFloat(lng), parseFloat(lat)],
-            $maxDistance: parseFloat(md)
-        }})
+        return postCollection.find(query)
+        
 
     } catch (error) {
         console.log(error)
+        return error;
     }
-    
+
 
 }
 
